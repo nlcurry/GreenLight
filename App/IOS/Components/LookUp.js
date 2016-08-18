@@ -79,11 +79,32 @@ class LookUp extends Component {
     this.state = {
       searchString: '',
       isLoading: false,
-      message: ''
+      message: '',
+      data: '',
+      results: false
     };
   }
 
+  // makes data readable
+  parseContent(body){
+    $ = cheerio.load(body);
+    var statusShortHtml = this.cleanText($(selectors.statusShort).html());
+    var statusShortText = this.cleanText($(selectors.statusShort).text());
+
+    var statusLongHtml = this.cleanText($(selectors.statusLong).html());
+    var statusLongText = this.cleanText($(selectors.statusLong).text());
+    console.log('heyoooooo')
+    statusObj.statusShortHtml = statusShortHtml;
+    statusObj.statusShortText = statusShortText;
+    statusObj.statusLongHtml = statusLongHtml;
+    statusObj.statusLongText = statusLongText;
+    this.setState({data: statusObj.statusLongHtml, results: true})
+    // console.log(statusObj.statusShortText)
+    // console.log(this.state.data)
+  }
+
   getStatus(receiptNumber, callback) {
+  console.log(receiptNumber)
   if(this.validNum(receiptNumber)) {
     q = q+1;
     setTimeout(() => {
@@ -91,16 +112,21 @@ class LookUp extends Component {
       }, q*250);
   } else {
     var err = "ERROR: Receipt number must be 13 digits";
+    this.setState({data: err, results: true, isLoading: false});
     return callback(err);
     }
   }
 
   onSearchPressed() {
-    this.getStatus('MSC',
+    this.setState({data: '', results: false, isLoading: true});
+    this.getStatus(this.state.searchString,
     function(err, data) {
-      console.log(data);
-      console.log('yep')
-      console.log(err)
+      if (err) {
+        console.log('error')
+      } else {
+        console.log('yerrr')
+        console.log(data)
+      }
     }
   )}
 
@@ -116,7 +142,7 @@ class LookUp extends Component {
         })
       })
       .then((response) => response.text())
-      .then((responseData) => this.parseContent(responseData))
+      .then((responseData) => this.handleResponse(responseData))
       .catch(error =>
        this.setState({
         isLoading: false,
@@ -124,20 +150,14 @@ class LookUp extends Component {
       .done();
   }
 
-// makes data readable
-  parseContent(body){
-    $ = cheerio.load(body);
-    var statusShortHtml = this.cleanText($(selectors.statusShort).html());
-    var statusShortText = this.cleanText($(selectors.statusShort).text());
-
-    var statusLongHtml = this.cleanText($(selectors.statusLong).html());
-    var statusLongText = this.cleanText($(selectors.statusLong).text());
-    // console.log('heyoooooo')
-    statusObj.statusShortHtml = statusShortHtml;
-    statusObj.statusShortText = statusShortText;
-    statusObj.statusLongHtml = statusLongHtml;
-    statusObj.statusLongText = statusLongText;
-    // console.log(statusObj)
+  handleResponse(response) {
+    this.setState({ isLoading: false , message: '' });
+    this.parseContent(response);
+    this.props.navigator.push({
+      title: 'Your Result',
+      component: StatusPage,
+      passProps: {data: statusObj}
+    })
   }
 
   validNum(receiptNumber) {
@@ -161,7 +181,7 @@ class LookUp extends Component {
 
   onSearchTextChanged(event) {
     console.log('onSearchTextChanged');
-    this.setState({ searchString: event.nativeEvent.text });
+    this.setState({ searchString: event.nativeEvent.text, results: false });
     console.log(this.state.searchString);
   }
 
@@ -170,6 +190,14 @@ class LookUp extends Component {
     ( <ActivityIndicator
         size='large'/> ) :
     ( <View/>);
+    console.log('imrender')
+    console.log(this.state.data)
+    var search = this.state.results ? (<Text>You entered: {this.state.searchString}</Text>) :
+      ( <View/>);
+    var output = this.state.results ?
+    (<Text>{this.state.data}</Text> ) :
+    ( <View/>);
+
     return (
       <View style={styles.container}>
         <Text style={styles.description}>
@@ -179,14 +207,16 @@ class LookUp extends Component {
           style={styles.searchInput}
           value={this.state.searchString}
           onChange={this.onSearchTextChanged.bind(this)}
-          placeholder='Search via name or postcode'/>
+          placeholder='Starts with 3 ltrs (ex: MSC, EAC)'/>
         <TouchableHighlight
           style={styles.button}
           onPress={this.onSearchPressed.bind(this)}
           underlayColor='#99d9f4'>
         <Text style={styles.buttonText}>Go</Text>
-        {spinner}
         </TouchableHighlight>
+        {spinner}
+        {search}
+        {output}
       </View>
     );
   }
