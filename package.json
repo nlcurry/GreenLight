@@ -1,0 +1,17 @@
+{
+  "name": "GreenLight",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start"
+  },
+  "dependencies": {
+    "cheerio": "^0.20.0",
+    "cheerio-without-node-native": "^0.20.1",
+    "query-string": "^4.2.3",
+    "react": "15.2.1",
+    "react-native": "0.31.0",
+    "request": "^2.74.0",
+    "request-promise-native": "^1.0.3"
+  }
+}
