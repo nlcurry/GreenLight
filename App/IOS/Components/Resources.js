@@ -8,25 +8,65 @@ import {
   TouchableHighlight,
   ActivityIndicator,
   TabBarIOS,
-  Image,
-  NavigatorIOS
+  Image
 } from 'react-native';
 
 var styles = StyleSheet.create({
   description: {
-    fontSize: 20,
+    marginBottom: 20,
+    fontSize: 18,
     textAlign: 'center',
-    color: '#FFFFFF'
+    color: '#656565'
   },
   container: {
+    padding: 30,
+    marginTop: 65,
+    paddingTop: 64,
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#123456',
+  },
+  flowRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'stretch'
+  },
+  buttonText: {
+    fontSize: 18,
+    color: 'white',
+    alignSelf: 'center'
+  },
+  button: {
+    height: 36,
+    flexDirection: 'row',
+    backgroundColor: '#48BBEC',
+    borderColor: '#48BBEC',
+    borderWidth: 1,
+    borderRadius: 8,
+    marginBottom: 10,
+    alignSelf: 'stretch',
+    justifyContent: 'center'
+  },
+  searchInput: {
+    height: 36,
+    padding: 4,
+    marginRight: 5,
+    flex: 4,
+    fontSize: 18,
+    borderWidth: 1,
+    borderColor: '#48BBEC',
+    borderRadius: 8,
+    color: '#48BBEC'
+  },
+  image: {
+    width: 217,
+    height: 138
   }
 });
 
-var AddressChange = require('./AddressChange');
+var AddressChange = require('../WebComponent/AddressChange');
+
+var ProcessTime = require('../WebComponent/ProcessTime');
+
 
 class Resources extends Component {
   goToAddress(){
@@ -36,16 +76,31 @@ class Resources extends Component {
     });
   }
 
+  goToProcess(){
+    this.props.navigator.push({
+      title: "Processing Time",
+      component: ProcessTime
+    });
+  }
+
   render() {
+    console.log('inrender')
     return (
       <View style={styles.container}>
         <TouchableHighlight
           style={styles.button}
-          onPress={this.goToAddress()}
+          onPress={this.goToAddress.bind(this)}
           underlayColor='#99d9f4'>
-        <Text style={styles.buttonText}>Address Change</Text>
+        <Text style={styles.buttonText}>Change Address</Text>
         </TouchableHighlight>
-      </View>
+
+        <TouchableHighlight
+          style={styles.button}
+          onPress={this.goToProcess.bind(this)}
+          underlayColor='#99d9f4'>
+        <Text style={styles.buttonText}>Check Processing Time</Text>
+        </TouchableHighlight>
+        </View>
     );
   }
 }

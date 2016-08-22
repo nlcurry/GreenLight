@@ -10,7 +10,8 @@ class AddressChange extends Component {
     return (
       <WebView
         source={{uri: 'https://egov.uscis.gov/coa/displayCOAForm.do'}}
-        style={{marginTop: 20}}
+        style={{marginTop: 20, flex: 1}}
+        scalesPageToFit = {true}
       />
     );
   }

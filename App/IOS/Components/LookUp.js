@@ -251,7 +251,5 @@ class LookUp extends Component {
   }
 }
 
-AppRegistry.registerComponent('LookUp', () => LookUp);
-
 module.exports = LookUp;
 

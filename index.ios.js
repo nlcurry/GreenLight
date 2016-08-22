@@ -38,6 +38,7 @@ class GreenLight extends Component {
               });
           }}>
             <LookUp />
+
         </TabBarIOS.Item>
         <TabBarIOS.Item
           selected={this.state.selectedTab === 'mycases'}
@@ -57,7 +58,11 @@ class GreenLight extends Component {
                     selectedTab: 'resources',
                 });
           }}>
-          <Resources />
+          <NavigatorIOS style={styles.nav}
+              initialRoute={{
+                  title : 'Resources',
+                  component: Resources
+                 }}/>
         </TabBarIOS.Item>
       </TabBarIOS>
     );
@@ -72,6 +77,9 @@ var styles = StyleSheet.create({
     margin: 80
   },
   container: {
+    flex: 1
+  },
+  nav: {
     flex: 1
   }
 });
