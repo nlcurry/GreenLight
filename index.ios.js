@@ -10,7 +10,8 @@ import {
   StyleSheet,
   Text,
   View,
-  TabBarIOS
+  TabBarIOS,
+  NavigatorIOS
 } from 'react-native';
 
 var LookUp = require('./App/IOS/Components/LookUp');

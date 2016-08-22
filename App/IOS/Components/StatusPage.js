@@ -8,7 +8,8 @@ import {
   TouchableHighlight,
   ActivityIndicator,
   TabBarIOS,
-  Image
+  Image,
+  WebView
 } from 'react-native';
 
 var styles = StyleSheet.create({

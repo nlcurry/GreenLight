@@ -8,7 +8,8 @@ import {
   TouchableHighlight,
   ActivityIndicator,
   TabBarIOS,
-  Image
+  Image,
+  AsyncStorage
 } from 'react-native';
 
 var styles = StyleSheet.create({
@@ -26,11 +27,51 @@ var styles = StyleSheet.create({
 });
 
 class MyCases extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      v1: '',
+      v2: '',
+      v3: '',
+      v4: '',
+      v5: '',
+      messages: []
+    };
+  }
+
+  componentDidMount() {
+    this._loadInitialState().done();
+  }
+
+  async _loadInitialState() {
+    AsyncStorage.getItem("myKey1")
+    .then( (value) =>
+          {
+            this.setState({v1:value})
+            return AsyncStorage.getItem("myKey2")
+          }
+    )
+    .then( (value) =>
+          {
+            this.setState({v2: value})
+            return AsyncStorage.getItem("myKey3")
+            return null
+          }
+    )
+    .then( (value) =>
+          {
+            this.setState({v3:value})
+          }
+    ).done();
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <Text style={styles.description}>
-          Welcome to your cases!
+          v1:{this.state.v1}
+          v2:{this.state.v2}
+          v3:{this.state.v3}
         </Text>
       </View>
     );

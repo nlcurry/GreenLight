@@ -8,7 +8,8 @@ import {
   TouchableHighlight,
   ActivityIndicator,
   TabBarIOS,
-  Image
+  Image,
+  AsyncStorage
 } from 'react-native';
 
 var styles = StyleSheet.create({
@@ -81,7 +82,10 @@ class LookUp extends Component {
       isLoading: false,
       message: '',
       data: '',
-      results: false
+      results: false,
+      v1: '',
+      v2: '',
+      v3: ''
     };
   }
 
@@ -138,7 +142,7 @@ class LookUp extends Component {
                   'Content-Type'   : 'application/x-www-form-urlencoded'
         },
         body: qs.stringify({
-          appReceiptNum: 'MSC1690053756',
+          appReceiptNum: receiptNumber,
         })
       })
       .then((response) => response.text())
@@ -185,6 +189,22 @@ class LookUp extends Component {
     console.log(this.state.searchString);
   }
 
+  onSavePressed(event) {
+    console.log('yaaaaay')
+    var v = this.state.searchString
+    console.log('onSavePressed', v)
+    if (this.state.v1 === '') {
+      AsyncStorage.setItem("myKey1", v).done();
+      this.setState({v1: v});
+    } else if (this.state.v2 === '') {
+      AsyncStorage.setItem("myKey2", v).done();
+      this.setState({v2: v});
+    } else {
+      AsyncStorage.setItem("myKey3", v).done();
+      this.setState({v3: v});
+    }
+  }
+
   render() {
     var spinner = this.state.isLoading ?
     ( <ActivityIndicator
@@ -195,7 +215,13 @@ class LookUp extends Component {
     var search = this.state.results ? (<Text>You entered: {this.state.searchString}</Text>) :
       ( <View/>);
     var output = this.state.results ?
-    (<Text>{this.state.data}</Text> ) :
+    (<View><Text>{this.state.data}</Text><TouchableHighlight
+          style={styles.button}
+          value={this.state.searchString}
+          onPress={this.onSavePressed.bind(this)}
+          underlayColor='#99d9f4'>
+        <Text style={styles.buttonText}>Save</Text>
+        </TouchableHighlight></View> ) :
     ( <View/>);
 
     return (
@@ -217,10 +243,15 @@ class LookUp extends Component {
         {spinner}
         {search}
         {output}
+        <Text>v1:{this.state.v1}</Text>
+        <Text>v2:{this.state.v2}</Text>
+        <Text>v3:{this.state.v3}</Text>
       </View>
     );
   }
 }
+
+AppRegistry.registerComponent('LookUp', () => LookUp);
 
 module.exports = LookUp;
 

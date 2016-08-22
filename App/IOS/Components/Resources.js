@@ -8,7 +8,8 @@ import {
   TouchableHighlight,
   ActivityIndicator,
   TabBarIOS,
-  Image
+  Image,
+  NavigatorIOS
 } from 'react-native';
 
 var styles = StyleSheet.create({
@@ -25,13 +26,25 @@ var styles = StyleSheet.create({
   }
 });
 
+var AddressChange = require('./AddressChange');
+
 class Resources extends Component {
+  goToAddress(){
+    this.props.navigator.push({
+      title: "Address Change",
+      component: AddressChange
+    });
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.description}>
-          Welcome to Resources!
-        </Text>
+        <TouchableHighlight
+          style={styles.button}
+          onPress={this.goToAddress()}
+          underlayColor='#99d9f4'>
+        <Text style={styles.buttonText}>Address Change</Text>
+        </TouchableHighlight>
       </View>
     );
   }
