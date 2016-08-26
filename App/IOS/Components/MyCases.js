@@ -45,6 +45,9 @@ var styles = StyleSheet.create({
   rowContainer: {
     flexDirection: 'row',
     padding: 10
+  },
+  top: {
+    marginTop: 65
   }
 });
 
@@ -70,33 +73,31 @@ class MyCases extends Component {
   }
 
   async _loadInitialState() {
-    AsyncStorage.getItem("myKey1")
-    .then( (value) =>
-          {
-            this.setState({cases: this.state.cases.concat([value])})
-            return AsyncStorage.getItem("myKey2")
-          }).then( (value) =>
-          {
-            this.setState({cases: this.state.cases.concat([value])})
-            return AsyncStorage.getItem("myKey3")
-            return null
-          }).then( (value) =>
-          {
-            this.setState({cases: this.state.cases.concat([value])})
-          }
-    ).done();
-    this.setState({isLoading: false})
-  }
-
-  makeRows() {
-    console.log('rowdata')
-    var out = ''
-    var holder = this.state.cases
-      for (var i=0; i < holder.length; i++) {
-        console.log('inloop')
-        out += "<TouchableHighlight><View><View style={styles.rowContainer}><Image style={styles.thumb}/><View  style={styles.textContainer}><Text style={styles.price}>{this.state.cases[i]}</Text><Text style={styles.title}numberOfLines={1}>rowData.case</Text></View></View><View style={styles.separator}/></View></TouchableHighlight>"
-    }
-    return out
+    AsyncStorage.getAllKeys((err, keys) => {
+    AsyncStorage.multiGet(keys, (err, stores) => {
+      stores.map((result, i, store) => {
+     // get at each store's key/value so you can work with it
+     this.setState({cases: this.state.cases.concat([store[i][1]])})
+      });
+    });
+    }).done(this.setState({isLoading: false}));
+    console.log('inload',this.state.cases)
+    // AsyncStorage.getItem("myKey1")
+    // .then( (value) =>
+    //       {
+    //         this.setState({cases: this.state.cases.concat([value])})
+    //         return AsyncStorage.getItem("myKey2")
+    //       }).then( (value) =>
+    //       {
+    //         this.setState({cases: this.state.cases.concat([value])})
+    //         return AsyncStorage.getItem("myKey3")
+    //         return null
+    //       }).then( (value) =>
+    //       {
+    //         this.setState({cases: this.state.cases.concat([value])})
+    //       }
+    // ).done();
+    // this.setState({isLoading: false})
   }
 
   render() {
@@ -126,7 +127,7 @@ class MyCases extends Component {
     });
 
         return (
-        <View>
+        <View style={styles.top}>
         {output}
         </View>
     );

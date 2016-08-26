@@ -83,7 +83,8 @@ class LookUp extends Component {
       message: '',
       data: '',
       results: false,
-      cases: []
+      cases: [],
+      allKeys: []
     };
   }
 
@@ -92,28 +93,9 @@ class LookUp extends Component {
   }
 
   async _loadInitialState() {
-    // AsyncStorage.getItem("myKey1")
-    // .then( (value) =>
-    //   {
-    //     this.setState({cases: this.state.cases.concat([value])})
-    //     return AsyncStorage.getItem("myKey2")
-    //   }).then( (value) =>
-    //   {
-    //     this.setState({cases: this.state.cases.concat([value])})
-    //     return AsyncStorage.getItem("myKey3")
-    //   }).then( (value) =>
-    //   {
-    //     this.setState({cases: this.state.cases.concat([value])})
-    //     return AsyncStorage.getItem("myKey4")
-    //   }).then( (value) =>
-    //   {
-    //     this.setState({cases: this.state.cases.concat([value])})
-    //     return AsyncStorage.getItem("myKey5")
-    //     return null
-    //   }).then( (value) =>
-    //   {
-    //     this.setState({cases: this.state.cases.concat([value])})
-    //   }).done();
+    AsyncStorage.getAllKeys((err, keys) => {
+      this.setState({allKeys: keys})
+    }).done()
   }
 
   // makes data readable
@@ -217,24 +199,13 @@ class LookUp extends Component {
   }
 
   onSavePressed(event) {
-    console.log('yaaaaay')
     var v = this.state.searchString
     console.log('onSavePressed', v)
-    var keyname = "myKey" + this.state.cases.length
+    var keyname = "myKey" + this.state.allKeys.length
     console.log('keyname', keyname)
     AsyncStorage.setItem(keyname, v).done();
     this.setState(({cases: this.state.cases.concat([v])}));
-    // if (this.state.v1 === '') {
-    //   AsyncStorage.setItem("myKey1", v).done();
-    //   this.setState({v1: v});
-    // } else if (this.state.v2 === '') {
-    //   AsyncStorage.setItem("myKey2", v).done();
-    //   this.setState({v2: v});
-    // } else {
-    //   AsyncStorage.setItem("myKey3", v).done();
-    //   this.setState({v3: v});
-    // }
-    console.log('onsave', this.state.v1)
+
   }
 
   render() {
@@ -276,6 +247,7 @@ class LookUp extends Component {
         {search}
         {output}
         <Text>cases:{this.state.cases}</Text>
+        <Text>all:{this.state.allKeys}</Text>
       </View>
     );
   }
