@@ -83,10 +83,37 @@ class LookUp extends Component {
       message: '',
       data: '',
       results: false,
-      v1: '',
-      v2: '',
-      v3: ''
+      cases: []
     };
+  }
+
+  componentDidMount() {
+    this._loadInitialState().done();
+  }
+
+  async _loadInitialState() {
+    // AsyncStorage.getItem("myKey1")
+    // .then( (value) =>
+    //   {
+    //     this.setState({cases: this.state.cases.concat([value])})
+    //     return AsyncStorage.getItem("myKey2")
+    //   }).then( (value) =>
+    //   {
+    //     this.setState({cases: this.state.cases.concat([value])})
+    //     return AsyncStorage.getItem("myKey3")
+    //   }).then( (value) =>
+    //   {
+    //     this.setState({cases: this.state.cases.concat([value])})
+    //     return AsyncStorage.getItem("myKey4")
+    //   }).then( (value) =>
+    //   {
+    //     this.setState({cases: this.state.cases.concat([value])})
+    //     return AsyncStorage.getItem("myKey5")
+    //     return null
+    //   }).then( (value) =>
+    //   {
+    //     this.setState({cases: this.state.cases.concat([value])})
+    //   }).done();
   }
 
   // makes data readable
@@ -193,16 +220,21 @@ class LookUp extends Component {
     console.log('yaaaaay')
     var v = this.state.searchString
     console.log('onSavePressed', v)
-    if (this.state.v1 === '') {
-      AsyncStorage.setItem("myKey1", v).done();
-      this.setState({v1: v});
-    } else if (this.state.v2 === '') {
-      AsyncStorage.setItem("myKey2", v).done();
-      this.setState({v2: v});
-    } else {
-      AsyncStorage.setItem("myKey3", v).done();
-      this.setState({v3: v});
-    }
+    var keyname = "myKey" + this.state.cases.length
+    console.log('keyname', keyname)
+    AsyncStorage.setItem(keyname, v).done();
+    this.setState(({cases: this.state.cases.concat([v])}));
+    // if (this.state.v1 === '') {
+    //   AsyncStorage.setItem("myKey1", v).done();
+    //   this.setState({v1: v});
+    // } else if (this.state.v2 === '') {
+    //   AsyncStorage.setItem("myKey2", v).done();
+    //   this.setState({v2: v});
+    // } else {
+    //   AsyncStorage.setItem("myKey3", v).done();
+    //   this.setState({v3: v});
+    // }
+    console.log('onsave', this.state.v1)
   }
 
   render() {
@@ -243,9 +275,7 @@ class LookUp extends Component {
         {spinner}
         {search}
         {output}
-        <Text>v1:{this.state.v1}</Text>
-        <Text>v2:{this.state.v2}</Text>
-        <Text>v3:{this.state.v3}</Text>
+        <Text>cases:{this.state.cases}</Text>
       </View>
     );
   }

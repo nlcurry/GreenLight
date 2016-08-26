@@ -64,22 +64,36 @@ var styles = StyleSheet.create({
 });
 
 var AddressChange = require('../WebComponent/AddressChange');
-
 var ProcessTime = require('../WebComponent/ProcessTime');
-
+var USCISNews = require('../WebComponent/USCISNews');
+var CaseInquiry = require('../WebComponent/CaseInquiry');
 
 class Resources extends Component {
-  goToAddress(){
+  goToAddressChange(){
     this.props.navigator.push({
       title: "Address Change",
       component: AddressChange
     });
   }
 
-  goToProcess(){
+  goToProcessingTime(){
     this.props.navigator.push({
       title: "Processing Time",
       component: ProcessTime
+    });
+  }
+
+  goToCaseInquiry(){
+    this.props.navigator.push({
+      title: "Case Inquiry",
+      component: CaseInquiry
+    });
+  }
+
+  goToUSCISNews(){
+    this.props.navigator.push({
+      title: "USCIS News",
+      component: USCISNews
     });
   }
 
@@ -89,16 +103,30 @@ class Resources extends Component {
       <View style={styles.container}>
         <TouchableHighlight
           style={styles.button}
-          onPress={this.goToAddress.bind(this)}
+          onPress={this.goToProcessingTime.bind(this)}
+          underlayColor='#99d9f4'>
+        <Text style={styles.buttonText}>Check Processing Time</Text>
+        </TouchableHighlight>
+
+        <TouchableHighlight
+          style={styles.button}
+          onPress={this.goToAddressChange.bind(this)}
           underlayColor='#99d9f4'>
         <Text style={styles.buttonText}>Change Address</Text>
         </TouchableHighlight>
 
         <TouchableHighlight
           style={styles.button}
-          onPress={this.goToProcess.bind(this)}
+          onPress={this.goToCaseInquiry.bind(this)}
           underlayColor='#99d9f4'>
-        <Text style={styles.buttonText}>Check Processing Time</Text>
+        <Text style={styles.buttonText}>Ask About Your Case</Text>
+        </TouchableHighlight>
+
+        <TouchableHighlight
+          style={styles.button}
+          onPress={this.goToUSCISNews.bind(this)}
+          underlayColor='#99d9f4'>
+        <Text style={styles.buttonText}>Check USCIS News</Text>
         </TouchableHighlight>
         </View>
     );

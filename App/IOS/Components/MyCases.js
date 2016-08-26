@@ -9,32 +9,58 @@ import {
   ActivityIndicator,
   TabBarIOS,
   Image,
-  AsyncStorage
+  AsyncStorage,
+  ListView
 } from 'react-native';
 
 var styles = StyleSheet.create({
-  description: {
-    fontSize: 20,
-    textAlign: 'center',
-    color: '#FFFFFF'
-  },
   container: {
+    padding: 30,
+    marginTop: 65,
+    paddingTop: 64,
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#123456',
+  },
+  thumb: {
+    width: 80,
+    height: 80,
+    marginRight: 10
+  },
+  textContainer: {
+    flex: 1
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#dddddd'
+  },
+  price: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: '#48BBEC'
+  },
+  title: {
+    fontSize: 20,
+    color: '#656565'
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    padding: 10
   }
 });
 
 class MyCases extends Component {
+
+
   constructor(props) {
     super(props);
     this.state = {
+      isLoading: true,
       v1: '',
       v2: '',
       v3: '',
       v4: '',
       v5: '',
+      cases: [],
       messages: []
     };
   }
@@ -47,34 +73,64 @@ class MyCases extends Component {
     AsyncStorage.getItem("myKey1")
     .then( (value) =>
           {
-            this.setState({v1:value})
+            this.setState({cases: this.state.cases.concat([value])})
             return AsyncStorage.getItem("myKey2")
-          }
-    )
-    .then( (value) =>
+          }).then( (value) =>
           {
-            this.setState({v2: value})
+            this.setState({cases: this.state.cases.concat([value])})
             return AsyncStorage.getItem("myKey3")
             return null
-          }
-    )
-    .then( (value) =>
+          }).then( (value) =>
           {
-            this.setState({v3:value})
+            this.setState({cases: this.state.cases.concat([value])})
           }
     ).done();
+    this.setState({isLoading: false})
+  }
+
+  makeRows() {
+    console.log('rowdata')
+    var out = ''
+    var holder = this.state.cases
+      for (var i=0; i < holder.length; i++) {
+        console.log('inloop')
+        out += "<TouchableHighlight><View><View style={styles.rowContainer}><Image style={styles.thumb}/><View  style={styles.textContainer}><Text style={styles.price}>{this.state.cases[i]}</Text><Text style={styles.title}numberOfLines={1}>rowData.case</Text></View></View><View style={styles.separator}/></View></TouchableHighlight>"
+    }
+    return out
   }
 
   render() {
+
+    if (this.state.isLoading) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.description}>
-          v1:{this.state.v1}
-          v2:{this.state.v2}
-          v3:{this.state.v3}
-        </Text>
-      </View>
+        <View style={styles.container}>
+        <Text>Is Loading...</Text>
+        </View>
     );
+  } else {
+      const output = this.state.cases.map((number) => {
+      return (<TouchableHighlight key={number}>
+          <View>
+            <View style={styles.rowContainer}>
+              <Image style={styles.thumb}/>
+              <View style={styles.textContainer}>
+                <Text style={styles.price}>
+                  {number}
+                </Text>
+                <Text style={styles.title} numberOfLines={1}>title</Text>
+              </View>
+            </View>
+            <View style={styles.separator}/>
+          </View>
+        </TouchableHighlight>);
+    });
+
+        return (
+        <View>
+        {output}
+        </View>
+    );
+  }
   }
 }
 
