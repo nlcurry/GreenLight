@@ -72,7 +72,11 @@ class GreenLight extends Component {
                   selectedTab: 'lookup',
               });
           }}>
-            <LookUp />
+            <NavigatorIOS style={styles.nav}
+              initialRoute={{
+                  title : 'Search Case',
+                  component: LookUp
+                 }}/>
 
         </TabBarIOS.Item>
         <TabBarIOS.Item
