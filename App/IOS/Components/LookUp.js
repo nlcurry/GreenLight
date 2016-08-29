@@ -54,6 +54,7 @@ var styles = StyleSheet.create({
   }
 });
 
+var Tracking = require('../WebComponent/Tracking')
 var cheerio = require('cheerio-without-node-native');
 var qs = require('query-string');
 
@@ -84,7 +85,8 @@ class LookUp extends Component {
       data: '',
       results: false,
       cases: [],
-      allKeys: []
+      allKeys: [],
+      trackingLink: false
     };
   }
 
@@ -101,23 +103,28 @@ class LookUp extends Component {
   // makes data readable
   parseContent(body){
     $ = cheerio.load(body);
-    var statusShortHtml = this.cleanText($(selectors.statusShort).html());
+    // var statusShortHtml = this.cleanText($(selectors.statusShort).html());
     var statusShortText = this.cleanText($(selectors.statusShort).text());
 
     var statusLongHtml = this.cleanText($(selectors.statusLong).html());
     var statusLongText = this.cleanText($(selectors.statusLong).text());
-    console.log('heyoooooo')
-    statusObj.statusShortHtml = statusShortHtml;
-    statusObj.statusShortText = statusShortText;
-    statusObj.statusLongHtml = statusLongHtml;
-    statusObj.statusLongText = statusLongText;
-    this.setState({data: statusObj.statusLongHtml, results: true})
+    if (statusLongHtml.includes('tracking number')){
+      var track = statusLongHtml.match(/href="[^"]+"/g)[0].replace("href=",'').replace(/['"]+/g, '')
+    } else {
+      var track = undefined
+    }
+    // statusObj.statusShortHtml = statusShortHtml;
+    // statusObj.statusShortText = statusShortText;
+    // statusObj.statusLongHtml = statusLongHtml;
+    // statusObj.statusLongText = statusLongText;
+    console.log('href', track)
+
+    this.setState({data: statusLongHtml, trackingLink: track, results: true})
     // console.log(statusObj.statusShortText)
     // console.log(this.state.data)
   }
 
   getStatus(receiptNumber, callback) {
-  console.log(receiptNumber)
   if(this.validNum(receiptNumber)) {
     q = q+1;
     setTimeout(() => {
@@ -145,6 +152,7 @@ class LookUp extends Component {
 
 // similar to _executequery
   scrapeStatus(receiptNumber) {
+    console.log('scraping', receiptNumber)
     fetch('https://egov.uscis.gov/casestatus/mycasestatus.do', {
         method: 'POST',
         headers : {
@@ -166,11 +174,6 @@ class LookUp extends Component {
   handleResponse(response) {
     this.setState({ isLoading: false , message: '' });
     this.parseContent(response);
-    this.props.navigator.push({
-      title: 'Your Result',
-      component: StatusPage,
-      passProps: {data: statusObj}
-    })
   }
 
   validNum(receiptNumber) {
@@ -208,15 +211,28 @@ class LookUp extends Component {
 
   }
 
+  goToTracking() {
+    this.props.navigator.push({
+      title: "Tracking",
+      component: Tracking,
+      passProps: {link: this.state.trackingLink}
+    });
+  }
+
   render() {
     var spinner = this.state.isLoading ?
     ( <ActivityIndicator
         size='large'/> ) :
     ( <View/>);
-    console.log('imrender')
-    console.log(this.state.data)
     var search = this.state.results ? (<Text>You entered: {this.state.searchString}</Text>) :
       ( <View/>);
+    var url = this.state.results ? <View><TouchableHighlight
+          style={styles.button}
+          onPress={this.goToTracking.bind(this)}
+          underlayColor='#99d9f4'>
+        <Text style={styles.buttonText}>Where is it?</Text>
+        </TouchableHighlight></View> :
+        <View/>
     var output = this.state.results ?
     (<View><Text>{this.state.data}</Text><TouchableHighlight
           style={styles.button}
@@ -246,6 +262,7 @@ class LookUp extends Component {
         {spinner}
         {search}
         {output}
+        {url}
         <Text>cases:{this.state.cases}</Text>
         <Text>all:{this.state.allKeys}</Text>
       </View>
