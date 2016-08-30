@@ -103,56 +103,42 @@ class LookUp extends Component {
   // makes data readable
   parseContent(body){
     $ = cheerio.load(body);
-    // var statusShortHtml = this.cleanText($(selectors.statusShort).html());
-    var statusShortText = this.cleanText($(selectors.statusShort).text());
-
-    var statusLongHtml = this.cleanText($(selectors.statusLong).html());
-    var statusLongText = this.cleanText($(selectors.statusLong).text());
-    if (statusLongHtml.includes('tracking number')){
-      var track = statusLongHtml.match(/href="[^"]+"/g)[0].replace("href=",'').replace(/['"]+/g, '')
+    if ($(selectors.err).children().length > 0) {
+        var errHtml = this.cleanText($(selectors.err).html());
+        var errText = this.cleanText($(selectors.err).text());
+        this.setState({data: errText, results: true})
     } else {
-      var track = undefined
-    }
-    // statusObj.statusShortHtml = statusShortHtml;
-    // statusObj.statusShortText = statusShortText;
-    // statusObj.statusLongHtml = statusLongHtml;
-    // statusObj.statusLongText = statusLongText;
-    console.log('href', track)
+      var statusShortText = this.cleanText($(selectors.statusShort).text());
 
-    this.setState({data: statusLongHtml, trackingLink: track, results: true})
-    // console.log(statusObj.statusShortText)
-    // console.log(this.state.data)
+      var statusLongHtml = this.cleanText($(selectors.statusLong).html());
+      var statusLongText = this.cleanText($(selectors.statusLong).text());
+      if (statusLongHtml.includes('tracking number')){
+        var track = statusLongHtml.match(/href="[^"]+"/g)[0].replace("href=",'').replace(/['"]+/g, '')
+    console.log('href', track)
+  }
+    this.setState({data: statusLongText, trackingLink: track, results: true})
+  }
+  console.log('data', this.state.data)
   }
 
-  getStatus(receiptNumber, callback) {
-  if(this.validNum(receiptNumber)) {
-    q = q+1;
-    setTimeout(() => {
-        this.scrapeStatus(receiptNumber)
-      }, q*250);
-  } else {
-    var err = "ERROR: Receipt number must be 13 digits";
-    this.setState({data: err, results: true, isLoading: false});
-    return callback(err);
+  getStatus(receiptNumber) {
+    if(this.validNum(receiptNumber)) {
+      q = q+1;
+      setTimeout(() => {
+          this.scrapeStatus(receiptNumber)
+        }, q*250);
+    } else {
+      var err = "ERROR: Receipt number must be 13 digits";
+      this.setState({data: err, results: true, isLoading: false});
     }
   }
 
   onSearchPressed() {
     this.setState({data: '', results: false, isLoading: true});
-    this.getStatus(this.state.searchString,
-    function(err, data) {
-      if (err) {
-        console.log('error')
-      } else {
-        console.log('yerrr')
-        console.log(data)
-      }
-    }
-  )}
+    this.getStatus(this.state.searchString)
+  }
 
-// similar to _executequery
   scrapeStatus(receiptNumber) {
-    console.log('scraping', receiptNumber)
     fetch('https://egov.uscis.gov/casestatus/mycasestatus.do', {
         method: 'POST',
         headers : {
@@ -167,7 +153,7 @@ class LookUp extends Component {
       .catch(error =>
        this.setState({
         isLoading: false,
-        message: 'Something bad happened ' + error}))
+        data: 'Something bad happened ' + error}))
       .done();
   }
 
@@ -196,9 +182,7 @@ class LookUp extends Component {
   }
 
   onSearchTextChanged(event) {
-    console.log('onSearchTextChanged');
     this.setState({ searchString: event.nativeEvent.text, results: false });
-    console.log(this.state.searchString);
   }
 
   onSavePressed(event) {
@@ -226,11 +210,11 @@ class LookUp extends Component {
     ( <View/>);
     var search = this.state.results ? (<Text>You entered: {this.state.searchString}</Text>) :
       ( <View/>);
-    var url = this.state.results ? <View><TouchableHighlight
+    var url = this.state.trackingLink ? <View><TouchableHighlight
           style={styles.button}
           onPress={this.goToTracking.bind(this)}
           underlayColor='#99d9f4'>
-        <Text style={styles.buttonText}>Where is it?</Text>
+        <Text style={styles.buttonText}>USPS Tracking</Text>
         </TouchableHighlight></View> :
         <View/>
     var output = this.state.results ?
