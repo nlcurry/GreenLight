@@ -59,7 +59,7 @@ var cheerio = require('cheerio-without-node-native');
 var qs = require('query-string');
 
 var selectors = {
-  err: '#formErrorMessages',
+  err: '#formErrorMessages ul',
   statusShort: '.main-content-sec .main-row .current-status-sec',
   statusLong: '.main-content-sec .main-row .appointment-sec .rows'
 };
@@ -108,7 +108,7 @@ class LookUp extends Component {
         var errText = this.cleanText($(selectors.err).text());
         this.setState({data: errText, results: true})
     } else {
-      var statusShortText = this.cleanText($(selectors.statusShort).text());
+      var statusShortText = this.cleanText($(selectors.statusShort).html());
 
       var statusLongHtml = this.cleanText($(selectors.statusLong).html());
       var statusLongText = this.cleanText($(selectors.statusLong).text());
@@ -116,7 +116,7 @@ class LookUp extends Component {
         var track = statusLongHtml.match(/href="[^"]+"/g)[0].replace("href=",'').replace(/['"]+/g, '')
     console.log('href', track)
   }
-    this.setState({data: statusLongText, trackingLink: track, results: true})
+    this.setState({data: statusShortText, trackingLink: track, results: true})
   }
   console.log('data', this.state.data)
   }
