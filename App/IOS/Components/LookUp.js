@@ -90,7 +90,8 @@ class LookUp extends Component {
       results: false,
       cases: [],
       allKeys: [],
-      trackingLink: false
+      trackingLink: false,
+      saveable: true
     };
   }
 
@@ -133,7 +134,7 @@ class LookUp extends Component {
   }
 
   onSearchPressed() {
-    this.setState({data: '', results: false, isLoading: true});
+    this.setState({data: '', results: false, isLoading: true, saveable: true});
     this.getStatus(this.state.searchString)
   }
 
@@ -154,11 +155,27 @@ class LookUp extends Component {
         isLoading: false,
         data: 'Something bad happened ' + error}))
       .done();
+    this.duplicate(receiptNumber)
+  }
+
+  duplicate(receiptNumber) {
+    console.log('induplicates')
+    AsyncStorage.getAllKeys((err, keys) => {
+      AsyncStorage.multiGet(keys, (err, stores) => {
+        stores.map((result, i, store) => {
+       // get at each store's key/value so you can work with it
+         if (receiptNumber === store[i][1]) {
+          this.setState({saveable: false})
+         }
+        });
+      })
+      }).done()
   }
 
   handleResponse(response) {
-    this.setState({ isLoading: false , message: '' });
+    console.log('donewithdata')
     this.parseContent(response);
+    this.setState({ isLoading: false , message: '' });
   }
 
   validNum(receiptNumber) {
@@ -188,13 +205,20 @@ class LookUp extends Component {
     var v = this.state.searchString
     console.log('onSavePressed', v)
     var keyname = "myKey" + this.state.allKeys.length
+    var count = this.state.allKeys.length
     console.log('keyname', keyname)
+    while (this.state.allKeys.includes(keyname)){
+      count += 1
+      keyname = "myKey" + count
+    }
+
     AsyncStorage.setItem(keyname, v).done();
     this.setState({      searchString: '',
       message: 'Saved!',
       results: false,
       cases: [],
-      trackingLink: false});
+      trackingLink: false
+    });
   }
 
   goToTracking() {
@@ -220,13 +244,15 @@ class LookUp extends Component {
         </TouchableHighlight></View> :
         <View/>
     var output = this.state.results ?
-    (<View><Text>{this.state.data}</Text><TouchableHighlight
+    (<View><Text>{this.state.data}</Text></View> ) :
+    ( <View/>);
+    var saveButton = this.state.saveable && this.state.results ? (<View><TouchableHighlight
           style={styles.button}
           value={this.state.searchString}
           onPress={this.onSavePressed.bind(this)}
           underlayColor='#99d9f4'>
         <Text style={styles.buttonText}>Save</Text>
-        </TouchableHighlight></View> ) :
+        </TouchableHighlight></View>) :
     ( <View/>);
 
     return (
@@ -248,6 +274,7 @@ class LookUp extends Component {
         {spinner}
         {search}
         {output}
+        {saveButton}
         {trackButton}
         <Text>cases:{this.state.cases}</Text>
         <Text>all:{this.state.allKeys}</Text>
