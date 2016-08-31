@@ -12,7 +12,8 @@ import {
   View,
   TabBarIOS,
   NavigatorIOS,
-  AsyncStorage
+  AsyncStorage,
+  Image
 } from 'react-native';
 
 var LookUp = require('./App/IOS/Components/LookUp');
@@ -63,6 +64,9 @@ class GreenLight extends Component {
 
   render() {
     return (
+      // <View style={styles.imageContainer}>
+      // <Image source={require('./App/IOS/Resources/flag1.jpg')}  style={styles.backgroundImage} />
+      // <View>
       <TabBarIOS selectedTab={this.state.selectedTab}>
         <TabBarIOS.Item
           selected={this.state.selectedTab === 'lookup'}
@@ -90,8 +94,7 @@ class GreenLight extends Component {
           <NavigatorIOS style={styles.nav}
               initialRoute={{
                   title : 'My Cases',
-                  component: MyCases,
-                  passProps: {cases: this.state.list}
+                  component: MyCases
                  }}/>
         </TabBarIOS.Item>
         <TabBarIOS.Item
@@ -109,6 +112,8 @@ class GreenLight extends Component {
                  }}/>
         </TabBarIOS.Item>
       </TabBarIOS>
+      // </View>
+      // </View>
     );
   }
 }
@@ -125,6 +130,14 @@ var styles = StyleSheet.create({
   },
   nav: {
     flex: 1
+  },
+  backgroundImage:{ justifyContent: 'center', alignItems: 'center', flex: 1, resizeMode: Image.resizeMode.contain,
+   width: 400, height: 400
+  },
+  imageContainer:{
+    flex:1,
+    alignItems: 'center',
+    position: 'absolute',
   }
 });
 

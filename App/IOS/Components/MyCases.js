@@ -3,7 +3,6 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
-  TextInput,
   View,
   TouchableHighlight,
   ActivityIndicator,
@@ -48,6 +47,12 @@ var styles = StyleSheet.create({
   },
   top: {
     marginTop: 65
+  },
+  centerContainer: {
+    flexDirection: 'column',
+    flex:1,
+    justifyContent:'center',
+    alignItems: 'center'
   }
 });
 
@@ -62,27 +67,33 @@ var selectors = {
 
 var StatusPage = require('./StatusPage')
 
+var uscisForms = ['I-130', 'I-131', 'I-485', 'I-140', 'I-129', 'I-191', 'I-360', 'I-485', 'I-508', 'I-526', 'I-589', 'I-601', 'I-602', 'I-612', 'I-693', 'I-730', 'I-751', 'I-765']
+
 class MyCases extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isLoading: true,
+      myKeys: [],
       cases: [],
       caseData: [],
       caseInfo: {},
-      messages: []
+      messages: [],
+      form: []
     };
   }
 
   componentDidMount() {
     this._loadInitialState()
     setTimeout(() => {
-          this.checkDone()
-        }, 2000);
+      this.setInfo()
+      this.setState({isLoading: false}
+    )}, 1200);
   }
 
   async _loadInitialState() {
     AsyncStorage.getAllKeys((err, keys) => {
+      this.setState({myKeys: keys})
       AsyncStorage.multiGet(keys, (err, stores) => {
         stores.map((result, i, store) => {
        // get at each store's key/value so you can work with it
@@ -95,17 +106,6 @@ class MyCases extends Component {
         this.scrapeStatus(number)
         console.log('number', number)
       })})}).done()
-
-  }
-
-  checkDone(){
-    // if (this.state.cases.length !== this.state.caseData.length){
-    //   setTimeout(this.checkDone(), 0)
-    // } else if (this.state.cases.length === this.state.caseData.length && this.state.cases.length > 0) {
-    //   console.log(this.state.cases.length, this.state.caseData.length)
-      this.setInfo()
-      this.setState({isLoading: false})
-    // }
   }
 
   setInfo(){
@@ -130,7 +130,8 @@ class MyCases extends Component {
   // makes data readable
   parseContent(body){
     $ = cheerio.load(body);
-    var statusShortText = this.cleanText($(selectors.statusShort).html());
+    var statusShortText = this.cleanText($(selectors.statusShort).text()).replace("Your Current Status:", '');
+
     console.log('inparse', statusShortText)
     this.setState({caseData: this.state.caseData.concat([statusShortText])})
     // console.log(statusObj.statusShortText)
@@ -155,15 +156,6 @@ class MyCases extends Component {
       .done();
   }
 
-  handleResponse(response) {
-    this.parseContent(response);
-    // this.props.navigator.push({
-    //   title: 'Your Result',
-    //   component: StatusPage,
-    //   passProps: {data: statusObj}
-    // })
-  }
-
   cleanText(text) {
     // http://stackoverflow.com/questions/10805125/how-to-remove-all-line-breaks-from-a-string
     try {
@@ -180,13 +172,18 @@ class MyCases extends Component {
 // --------------
 
   render() {
+    var spinner = this.state.isLoading ?
+    ( <ActivityIndicator
+        size='large'/> ) :
+    ( <View/>);
+
     if (this.state.isLoading) {
     return (
-        <View style={styles.container}>
-        <Text>Is Loading...</Text>
+        <View style={styles.centerContainer}>
+        {spinner}
         </View>
     );
-  } else {
+  } else if (this.state.cases[0] != null) {
       const output = this.state.cases.map((number) => {
       return (<TouchableHighlight onPress={() => this.rowPressed(number)} key={number} underlayColor='#dddddd'>
           <View>
@@ -196,7 +193,7 @@ class MyCases extends Component {
                 <Text style={styles.price}>
                   {number}
                 </Text>
-                <Text style={styles.title} numberOfLines={1}>{this.state.caseInfo[number]}</Text>
+
               </View>
             </View>
             <View style={styles.separator}/>
@@ -209,6 +206,12 @@ class MyCases extends Component {
         {output}
         </View>
     );
+  } else {
+    return(
+      <View style= {styles.centerContainer}>
+      <Text>No Cases Saved</Text>
+      </View>
+    )
   }
   }
 }

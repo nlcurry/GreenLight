@@ -113,7 +113,7 @@ class LookUp extends Component {
       var statusLongHtml = this.cleanText($(selectors.statusLong).html());
       var statusLongText = this.cleanText($(selectors.statusLong).text());
       if (statusLongHtml.includes('tracking number')){
-        var track = statusLongHtml.match(/href="[^"]+"/g)[0].replace("href=",'').replace(/['"]+/g, '')
+        var track = statusLongHtml.match(/href="[^"]+"/g)[0].replace(/['"]+/g, '')
     console.log('href', track)
   }
     this.setState({data: statusShortText, trackingLink: track, results: true})
@@ -210,7 +210,7 @@ class LookUp extends Component {
     ( <View/>);
     var search = this.state.results ? (<Text>You entered: {this.state.searchString}</Text>) :
       ( <View/>);
-    var url = this.state.trackingLink ? <View><TouchableHighlight
+    var trackButton = this.state.trackingLink ? <View><TouchableHighlight
           style={styles.button}
           onPress={this.goToTracking.bind(this)}
           underlayColor='#99d9f4'>
@@ -246,7 +246,7 @@ class LookUp extends Component {
         {spinner}
         {search}
         {output}
-        {url}
+        {trackButton}
         <Text>cases:{this.state.cases}</Text>
         <Text>all:{this.state.allKeys}</Text>
       </View>

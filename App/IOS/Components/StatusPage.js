@@ -18,8 +18,14 @@ var styles = StyleSheet.create({
   heading: {
     backgroundColor: '#F8F8F8',
   },
+  centerContainer: {
+    flexDirection: 'column',
+    flex:1,
+    justifyContent:'center',
+    alignItems: 'center'
+  },
   button: {
-    height: 36,
+    height: 39,
     flex: 1,
     flexDirection: 'row',
     backgroundColor: '#48BBEC',
@@ -79,7 +85,8 @@ class StatusPage extends Component {
       data: '',
       number: this.props.number,
       isLoading: true,
-      tracking: false
+      tracking: false,
+      myKey: undefined
     };
   }
 
@@ -114,8 +121,6 @@ class StatusPage extends Component {
         this.setState({tracking: track })
     }
     this.setState({data: statusLongText, isLoading: false})
-
-    console.log('parse',this.state.data)
   }
 
   cleanText(text) {
@@ -140,6 +145,27 @@ class StatusPage extends Component {
     });
   }
 
+  onDeletePressed(){
+    AsyncStorage.getAllKeys((err, keys) => {
+    AsyncStorage.multiGet(keys, (err, stores) => {
+     stores.map((result, i, store) => {
+        if (store[i][1] === this.state.number) {
+          this.setState({myKey: store[i][0]})
+        }
+      });
+    });
+    }).done();
+    console.log('deletepressed')
+    setTimeout(() => {
+    AsyncStorage.removeItem(this.state.myKey).done()
+    Alert.alert(
+            'You Deleted',
+            this.state.number
+          )
+    this.props.navigator.pop()
+    }, 200);
+  }
+
   render() {
     var spinner = this.state.isLoading ?
     ( <ActivityIndicator
@@ -154,11 +180,18 @@ class StatusPage extends Component {
         </TouchableHighlight></View> :
         <View/>
 
+    var num = this.state.number
+    var deleteButton = this.state.isLoading ? <View/> : <View><TouchableHighlight
+          style={styles.button}
+          underlayColor='#99d9f4'
+          onPress={this.onDeletePressed.bind(this)}>
+        <Image source = {require('../Resources/trash.png')}/>
+        </TouchableHighlight></View>
+
     if (this.state.isLoading) {
       return(
-      <View style={styles.container}>
+      <View style={styles.centerContainer}>
         {spinner}
-        <Text>Loading...</Text>
       </View>
       )
     } else {
@@ -171,6 +204,7 @@ class StatusPage extends Component {
           </View>
           <Text style={styles.description}>{this.state.data}</Text>
           {url}
+          {deleteButton}
         </View>
       );
     }
