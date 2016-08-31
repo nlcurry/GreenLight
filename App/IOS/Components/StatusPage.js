@@ -8,7 +8,8 @@ import {
   ActivityIndicator,
   TabBarIOS,
   Image,
-  AsyncStorage
+  AsyncStorage,
+  Alert
 } from 'react-native';
 
 var styles = StyleSheet.create({

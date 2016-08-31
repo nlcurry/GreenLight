@@ -12,6 +12,10 @@ import {
   AsyncStorage
 } from 'react-native';
 
+// sample cases: msc1690053729
+// msc1690053728
+//
+
 var styles = StyleSheet.create({
   description: {
     marginBottom: 20,
@@ -104,21 +108,16 @@ class LookUp extends Component {
   parseContent(body){
     $ = cheerio.load(body);
     if ($(selectors.err).children().length > 0) {
-        var errHtml = this.cleanText($(selectors.err).html());
         var errText = this.cleanText($(selectors.err).text());
         this.setState({data: errText, results: true})
     } else {
-      var statusShortText = this.cleanText($(selectors.statusShort).html());
-
       var statusLongHtml = this.cleanText($(selectors.statusLong).html());
       var statusLongText = this.cleanText($(selectors.statusLong).text());
       if (statusLongHtml.includes('tracking number')){
         var track = statusLongHtml.match(/href="[^"]+"/g)[0].replace(/['"]+/g, '')
-    console.log('href', track)
-  }
-    this.setState({data: statusShortText, trackingLink: track, results: true})
-  }
-  console.log('data', this.state.data)
+      }
+      this.setState({data: statusLongText, trackingLink: track, results: true})
+    }
   }
 
   getStatus(receiptNumber) {
@@ -191,8 +190,11 @@ class LookUp extends Component {
     var keyname = "myKey" + this.state.allKeys.length
     console.log('keyname', keyname)
     AsyncStorage.setItem(keyname, v).done();
-    this.setState(({cases: this.state.cases.concat([v])}));
-
+    this.setState({      searchString: '',
+      message: 'Saved!',
+      results: false,
+      cases: [],
+      trackingLink: false});
   }
 
   goToTracking() {
@@ -249,6 +251,7 @@ class LookUp extends Component {
         {trackButton}
         <Text>cases:{this.state.cases}</Text>
         <Text>all:{this.state.allKeys}</Text>
+        <Text>{this.state.message}</Text>
       </View>
     );
   }

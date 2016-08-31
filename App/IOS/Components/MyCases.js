@@ -37,8 +37,9 @@ var styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#48BBEC'
   },
-  title: {
-    fontSize: 20,
+  description: {
+    marginTop: 2,
+    fontSize: 14,
     color: '#656565'
   },
   rowContainer: {
@@ -130,7 +131,7 @@ class MyCases extends Component {
   // makes data readable
   parseContent(body){
     $ = cheerio.load(body);
-    var statusShortText = this.cleanText($(selectors.statusShort).text()).replace("Your Current Status:", '');
+    var statusShortText = this.cleanText($(selectors.statusShort).text()).replace("Your Current Status: ", '');
 
     console.log('inparse', statusShortText)
     this.setState({caseData: this.state.caseData.concat([statusShortText])})
@@ -189,22 +190,19 @@ class MyCases extends Component {
           <View>
             <View style={styles.rowContainer}>
               <Image style={styles.thumb}/>
-              <View style={styles.textContainer}>
-                <Text style={styles.price}>
-                  {number}
-                </Text>
-
-              </View>
+            <View style={styles.textContainer}>
+            <Text style={styles.price}>{number}</Text>
+            <Text style={styles.description}>{this.state.caseData[this.state.cases.indexOf(number)]}</Text>
             </View>
-            <View style={styles.separator}/>
+          </View>
+          <View style={styles.separator}/>
           </View>
         </TouchableHighlight>);
-    });
-
-        return (
-        <View style={styles.top}>
-        {output}
-        </View>
+      });
+      return (
+      <View style={styles.top}>
+      {output}
+      </View>
     );
   } else {
     return(
