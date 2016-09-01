@@ -26,19 +26,18 @@ var styles = StyleSheet.create({
   container: {
     padding: 30,
     marginTop: 65,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   button: {
     height: 36,
-    flex: 1,
-    flexDirection: 'row',
     backgroundColor: '#48BBEC',
     borderColor: '#48BBEC',
     borderWidth: 1,
     borderRadius: 8,
     marginBottom: 10,
     alignSelf: 'stretch',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginTop: 4
   },
   buttonText: {
     fontSize: 18,
@@ -55,6 +54,10 @@ var styles = StyleSheet.create({
     borderColor: '#48BBEC',
     borderRadius: 8,
     color: '#48BBEC'
+  },
+  output: {
+    marginTop: 5,
+    marginBottom:5
   }
 });
 
@@ -67,8 +70,6 @@ var selectors = {
   statusShort: '.main-content-sec .main-row .current-status-sec',
   statusLong: '.main-content-sec .main-row .appointment-sec .rows'
 };
-
-var q = -1;
 
 var statusObj = {
   errHtml: undefined,
@@ -123,10 +124,9 @@ class LookUp extends Component {
 
   getStatus(receiptNumber) {
     if(this.validNum(receiptNumber)) {
-      q = q+1;
       setTimeout(() => {
           this.scrapeStatus(receiptNumber)
-        }, q*250);
+        }, 250);
     } else {
       var err = "ERROR: Receipt number must be 13 digits";
       this.setState({data: err, results: true, isLoading: false});
@@ -159,7 +159,6 @@ class LookUp extends Component {
   }
 
   duplicate(receiptNumber) {
-    console.log('induplicates')
     AsyncStorage.getAllKeys((err, keys) => {
       AsyncStorage.multiGet(keys, (err, stores) => {
         stores.map((result, i, store) => {
@@ -173,7 +172,6 @@ class LookUp extends Component {
   }
 
   handleResponse(response) {
-    console.log('donewithdata')
     this.parseContent(response);
     this.setState({ isLoading: false , message: '' });
   }
@@ -198,15 +196,13 @@ class LookUp extends Component {
   }
 
   onSearchTextChanged(event) {
-    this.setState({ searchString: event.nativeEvent.text, results: false });
+    this.setState({ searchString: event.nativeEvent.text, results: false, saveable: false, trackingLink: false});
   }
 
   onSavePressed(event) {
     var v = this.state.searchString
-    console.log('onSavePressed', v)
     var keyname = "myKey" + this.state.allKeys.length
     var count = this.state.allKeys.length
-    console.log('keyname', keyname)
     while (this.state.allKeys.includes(keyname)){
       count += 1
       keyname = "myKey" + count
@@ -244,7 +240,7 @@ class LookUp extends Component {
         </TouchableHighlight></View> :
         <View/>
     var output = this.state.results ?
-    (<View><Text>{this.state.data}</Text></View> ) :
+    (<View style={styles.output}><Text style={{textAlign: 'center'}}>{this.state.data}</Text></View> ) :
     ( <View/>);
     var saveButton = this.state.saveable && this.state.results ? (<View><TouchableHighlight
           style={styles.button}
@@ -269,20 +265,21 @@ class LookUp extends Component {
           style={styles.button}
           onPress={this.onSearchPressed.bind(this)}
           underlayColor='#99d9f4'>
-        <Text style={styles.buttonText}>Go</Text>
+        <Text style={styles.buttonText}>Search</Text>
         </TouchableHighlight>
         {spinner}
         {search}
         {output}
         {saveButton}
         {trackButton}
-        <Text>cases:{this.state.cases}</Text>
-        <Text>all:{this.state.allKeys}</Text>
         <Text>{this.state.message}</Text>
       </View>
     );
   }
 }
 
+// for troubleshooting
+        // <Text>cases:{this.state.cases}</Text>
+        // <Text>all:{this.state.allKeys}</Text>
 module.exports = LookUp;
 

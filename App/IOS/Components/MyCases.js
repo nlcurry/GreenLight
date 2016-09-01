@@ -32,10 +32,10 @@ var styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#dddddd'
   },
-  price: {
+  caseNumber: {
     fontSize: 25,
     fontWeight: 'bold',
-    color: '#48BBEC'
+    color: 'orange'
   },
   description: {
     marginTop: 2,
@@ -79,8 +79,7 @@ class MyCases extends Component {
       cases: [],
       caseData: [],
       caseInfo: {},
-      messages: [],
-      form: []
+      messages: []
     };
   }
 
@@ -99,22 +98,18 @@ class MyCases extends Component {
         stores.map((result, i, store) => {
        // get at each store's key/value so you can work with it
        this.setState({cases: this.state.cases.concat([store[i][1]])})
-        console.log('inmultiget', store[i][1])
         });
       })
     .then((value) => {
       this.state.cases.map((number) => {
         this.scrapeStatus(number)
-        console.log('number', number)
       })})}).done()
   }
 
   setInfo(){
     var object = {}
-    console.log('cases', this.state.cases)
     for(var i = 0; i < this.state.cases.length; i++){
         object[this.state.cases[i]] = this.state.caseData[i]
-    console.log('object', object)
     }
     this.setState({caseInfo: object})
   }
@@ -132,11 +127,7 @@ class MyCases extends Component {
   parseContent(body){
     $ = cheerio.load(body);
     var statusShortText = this.cleanText($(selectors.statusShort).text()).replace("Your Current Status: ", '');
-
-    console.log('inparse', statusShortText)
     this.setState({caseData: this.state.caseData.concat([statusShortText])})
-    // console.log(statusObj.statusShortText)
-    console.log('parse',this.state.caseData)
   }
 
   scrapeStatus(receiptNumber) {
@@ -191,7 +182,7 @@ class MyCases extends Component {
             <View style={styles.rowContainer}>
               <Image style={styles.thumb}/>
             <View style={styles.textContainer}>
-            <Text style={styles.price}>{number}</Text>
+            <Text style={styles.caseNumber}>{number}</Text>
             <Text style={styles.description}>{this.state.caseData[this.state.cases.indexOf(number)]}</Text>
             </View>
           </View>

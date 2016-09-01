@@ -48,8 +48,8 @@ var styles = StyleSheet.create({
   price: {
     fontSize: 25,
     fontWeight: 'bold',
-    margin: 5,
-    color: '#48BBEC'
+    margin: 15,
+    color: 'orange'
   },
   title: {
     fontSize: 20,
@@ -58,8 +58,9 @@ var styles = StyleSheet.create({
   },
   description: {
     fontSize: 18,
-    margin: 5,
-    color: '#656565'
+    margin: 10,
+    color: '#656565',
+    textAlign: 'center'
   },
   buttonText: {
     fontSize: 18,
@@ -116,7 +117,9 @@ class StatusPage extends Component {
   parseContent(body){
     $ = cheerio.load(body);
     var statusLongText = this.cleanText($(selectors.statusLong).text());
+    var statusShortText = this.cleanText($(selectors.statusShort).text()).replace("Your Current Status: ", '');
     var statusLongHtml = this.cleanText($(selectors.statusLong).html());
+    statusLongText = statusLongText.replace(statusShortText, '')
     if (statusLongHtml.includes('tracking number')){
       var track = statusLongHtml.match(/href="[^"]+"/g)[0].replace("href=",'').replace(/['"]+/g, '')
         this.setState({tracking: track })
@@ -156,7 +159,6 @@ class StatusPage extends Component {
       });
     });
     }).done();
-    console.log('deletepressed')
     setTimeout(() => {
     AsyncStorage.removeItem(this.state.myKey).done()
     Alert.alert(
@@ -200,7 +202,6 @@ class StatusPage extends Component {
         <View style={styles.container}>
           <View style={styles.heading}>
             <Text style={styles.price}>{this.state.number}</Text>
-            <Text style={styles.title}> </Text>
             <View style={styles.separator}/>
           </View>
           <Text style={styles.description}>{this.state.data}</Text>
