@@ -22,7 +22,7 @@ This app uses the following npm packages:
 ## Links:
 - [Trello](https://trello.com/b/JCOjkISK/uscis-app)
 - [Product Plan](https://gist.github.com/nlcurry/9a65630ddc38936cbeaa42e5fadc81fc)
-- 
-## No Testing was made on this repo
+
+### No Testing was made on this repo
 
 
